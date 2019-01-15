@@ -15,7 +15,7 @@
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
         let loop = null;
-        let n = 0;
+        let n = 0; //918 is where the magic happens
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         function plot() {
             const btn = document.getElementById("btn");
@@ -35,16 +35,21 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "#000000";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#ff9a34";
+            ctx.fillStyle = "#ff811a";
             for(let i = 0; i < lines.length; i++){
                 let dot_data = lines[i].split(" ");
-                let x = Math.round((parseInt(dot_data[0]) + n * parseInt(dot_data[2])) * 0.1) + canvas.width / 2;
-                let y = Math.round((parseInt(dot_data[1]) + n * parseInt(dot_data[3])) * 0.1) + canvas.height / 2;
+                let x = Math.round((parseInt(dot_data[0]) + n * parseInt(dot_data[2])) * (5.48796855e-9 * n**3)) + canvas.width / 2 - 100;
+                let y = Math.round((parseInt(dot_data[1]) + n * parseInt(dot_data[3])) * (0.001 + 5.48796855e-9 * n**3)) + canvas.height / 2;
                 ctx.beginPath();
-                ctx.arc(x, y, 10, 0, 2 * Math.PI);
+                ctx.arc(x, y, 3, 0, 2 * Math.PI);
                 ctx.fill();
             }
+            console.log(n);
+            if (n >= 918){
+                plot()
+            }
             n++
+
         }
     </script>
 </body>
