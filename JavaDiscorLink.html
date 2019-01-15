@@ -7,19 +7,29 @@
 <body>
     Data:<br>
     <textarea id="data" rows="10" cols="50">Copy paste your data here...</textarea>
-    <button type="button" onclick="plot()">Draw</button>
+    <button id="btn" type="button" onclick="plot()">Draw</button>
     <canvas id="canvas" width="1536" height="864" style="margin-left: 2.5em; margin-top: 2.5em;border-width: 2px; border-color: red; border-style:solid;"></canvas>
 
     <script>
         let lines = [];
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
+        let loop = null;
         let n = 0;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         function plot() {
-              const data = document.getElementById("data").value;
-              lines = data.split('\n');
-              setInterval(draw, 10);
+            const btn = document.getElementById("btn");
+            if (!loop){
+                const data = document.getElementById("data").value;
+                lines = data.split('\n');
+                loop = setInterval(draw, 10);
+                btn.innerText = "Stop";
+            }
+            else {
+                clearInterval(loop);
+                loop = null;
+                btn.innerText = "Draw";
+            }
         }
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -30,8 +40,9 @@
                 let dot_data = lines[i].split(" ");
                 let x = Math.round((parseInt(dot_data[0]) + n * parseInt(dot_data[2])) * 0.1) + canvas.width / 2;
                 let y = Math.round((parseInt(dot_data[1]) + n * parseInt(dot_data[3])) * 0.1) + canvas.height / 2;
-                console.log(x, y);
-                ctx.fillRect(x, y, 10, 10);
+                ctx.beginPath();
+                ctx.arc(x, y, 10, 0, 2 * Math.PI);
+                ctx.fill();
             }
             n++
         }
