@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Java Discord Link</title>
+</head>
+<style>
+    div {
+    display: inline-block;
+    }
+
+    div label {
+        display: block;
+    }
+</style>
+<body>
+    <div style="margin-left: 2.5em">
+        Data:<br>
+        <textarea id="data" rows="10" cols="50">Copy paste your data here...</textarea>
+    </div>
+    <div style="margin-left: 2.5em">
+        Flips:<br>
+        <textarea id="data2" rows="10" cols="50">Copy paste your data here...</textarea>
+    </div>
+    <button id="btn" type="button" onclick="plot()">Draw</button>
+    <canvas id="canvas" width="1584" height="484" style="margin-left: 2.5em; margin-top: 2.5em;border-width: 2px; border-color: red; border-style:solid;"></canvas>
+
+    <script>
+        let lines = [];
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        let loop = null;
+        const zoom = 22;
+        let n = 0;
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        function plot() {
+            const btn = document.getElementById("btn");
+            if (!loop){
+                if (n === 0){
+                    const data = document.getElementById("data").value;
+                    lines = data.split('\n');
+                    prepareCanvas(lines)
+                }
+                const data = document.getElementById("data2").value;
+                lines = data.split('\n');
+                loop = setInterval(draw, 50);
+                btn.innerText = "Stop";
+            }
+            else {
+                clearInterval(loop);
+                loop = null;
+                btn.innerText = "Draw";
+            }
+        }
+        function draw() {
+            console.log(n);
+            let dot_data = lines[n].split(" ");
+            for (let x = parseInt(dot_data[0]); x < parseInt(dot_data[0]) + parseInt(dot_data[2]); x++){
+                for (let y = parseInt(dot_data[1]); y < parseInt(dot_data[1]) + parseInt(dot_data[3]); y++){
+                    const pixel = GetPixel(x * zoom, y * zoom);
+                    if (pixel === "#000000")
+                        ctx.fillStyle = "#ff811a";
+                    else
+                        ctx.fillStyle = "#000000";
+                    ctx.fillRect(x * zoom, y * zoom, zoom, zoom);
+                }
+            }
+            if (n >= lines.length - 1 || n === 409)
+                plot();
+            n++
+        }
+        function GetPixel(x, y)
+        {
+            const p = ctx.getImageData(x, y, 1, 1).data;
+            return "#" + ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
+
+        }
+
+        function rgbToHex(r, g, b) {
+            if (r > 255 || g > 255 || b > 255)
+                throw "Invalid color component";
+            return ((r << 16) | (g << 8) | b).toString(16);
+        }
+        function prepareCanvas(lines) {
+            ctx.fillStyle = "#ff811a";
+            for (let i = 0; i < lines.length; i++){
+                const dot = lines[i].split(' ');
+                ctx.fillRect(parseInt(dot[0]) * zoom, parseInt(dot[1]) * zoom, zoom, zoom);
+            }
+        }
+    </script>
+</body>
+</html>
